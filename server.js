@@ -14,7 +14,6 @@ async function readJson(jsonPath, pokemon) {
     fs.writeFileSync('data.json', JSON.stringify(updatedList, 'utf-8'));
 }
 
-
 async function scrapPokemon (id){
     return new Promise((resolve, reject ) => {
         let response =  [];
@@ -25,18 +24,15 @@ async function scrapPokemon (id){
         .error(err => reject(err))
         .done(() => resolve(response));
     });
-
 }
 
-app.get('/scrap', (req, res) => {
-    for(let i = 0; i < 890; i++){
+app.get('/scrap', async(req, res) => {
+    for(let i = 1; i < 891; i++){
         
-            let id = i + 1;
-            scrapPokemon(id).then(res => {
+            await scrapPokemon(i).then(res => {
 
-                
                 const pokemon = {
-                    id,
+                    id: i,
                     description: res[0].pokemon
                 }
                 readJson('data.json', pokemon);
@@ -44,22 +40,10 @@ app.get('/scrap', (req, res) => {
 
     }
     
-    res.json({
-        ok: true
-    });
-})
-
-
-app.get('/readJson' , async(req, res) => {
-    let file = await fs.readFileSync('data.json','utf-8');
-    let lista = JSON.parse(file);
-    console.log(lista.find(i => i.id == 150));   
+    res.json('Ready');
 });
 
-app.put('/sortJson', async(req, res) => {
-    let file = await fs.readFileSync('data.json','utf-8');
-    let lista = JSON.parse(file);
-})
+
 app.listen(3000, () => {
     console.log('server run in port 3000');
-})
+});
